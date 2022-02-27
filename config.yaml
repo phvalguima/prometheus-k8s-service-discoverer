@@ -1,0 +1,64 @@
+# Copyright 2022 pguimaraes
+# See LICENSE file for licensing details.
+#
+# TEMPLATE-TODO: change this example to suit your needs.
+# If you don't need a config, you can remove the file entirely.
+# It ties in to the example _on_config_changed handler in src/charm.py
+#
+# Learn more about config at: https://juju.is/docs/sdk/config
+
+options:
+  scrape_interval:
+    default: "30s"
+    description: Sets scrape interval for prometheus.
+    type: string
+  kubernetes_sd_configs:
+    default: "pod"
+    description: |
+      Select a role to be monitored out of: endpoints, service, pod, node, or ingress
+      Comma-separated list of k8s object types to watch for.
+    type: string
+  relabel_configs:
+    type: string
+    description: |
+      YAML-formatted string containing the relabel configs using prometheus standard labels
+      such as: __meta_kubernetes_pod_annotation_prometheus_io_scrape.
+    default: |
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        separator: ;
+        regex: "true"
+        replacement: $1
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        separator: ;
+        regex: metrics(-.*)?
+        replacement: $1
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        separator: ;
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: $1
+        action: replace
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        separator: ;
+        regex: (.+):(?:\d+);(\d+)
+        target_label: __address__
+        replacement: ${1}:${2}
+        action: replace
+      - separator: ;
+        regex: __meta_kubernetes_pod_label_(.+)
+        replacement: $1
+        action: labelmap
+      - source_labels: [__meta_kubernetes_namespace]
+        separator: ;
+        regex: (.*)
+        target_label: kubernetes_namespace
+        replacement: $1
+        action: replace
+      - source_labels: [__meta_kubernetes_pod_name]
+        separator: ;
+        regex: (.*)
+        target_label: kubernetes_pod_name
+        replacement: $1
+        action: replace

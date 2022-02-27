@@ -1,0 +1,16 @@
+# Copyright 2022 pguimaraes
+# See LICENSE file for licensing details.
+
+# For a complete list of supported options, see:
+# https://juju.is/docs/sdk/metadata-reference
+name: prometheus-k8s-service-discoverer
+display-name: |
+  Prometheus K8S Service Discover
+description: |
+  Discovers k8s objects tagged with standard prometheus labels such as "prometheus.io/scraping=true".
+summary: |
+  Proxy charm to connect with Prometheus and configure it to learn about k8s objects tagged with standard
+  prometheus labels. This charm will act as a config proxy: captures the options and pass via relations.
+provides:
+  monitoring:
+    interface: prometheus_scrape
